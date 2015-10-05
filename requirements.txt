@@ -1,5 +1,6 @@
 Jinja2==2.8
 MarkupSafe==0.23
+jsonschema==2.5.1
 ipython==3.2.1
 pyzmq==14.7.0
 tornado==4.2.1
