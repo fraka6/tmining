@@ -15,4 +15,3 @@ matplotlib==1.4.3
 theano==0.7
 theanets==0.6.2
 pandas==0.17.0
-pylucene
