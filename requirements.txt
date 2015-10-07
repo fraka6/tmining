@@ -10,7 +10,7 @@ terminado==0.5
 pygments==2.0.2
 scipy==0.16.0
 scikit-learn==0.16.1
-numpy==1.10.0
+numpy==1.9.3
 matplotlib==1.4.3
 theano==0.7
 theanets==0.6.2
