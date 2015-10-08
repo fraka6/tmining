@@ -10,3 +10,4 @@ terminado==0.5
 pygments==2.0.2
 numpy==1.9.3
 matplotlib==1.4.3
+scipy==0.16.0
