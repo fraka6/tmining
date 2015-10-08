@@ -8,6 +8,8 @@ wsgiref==0.1.2
 mistune==0.7.1
 terminado==0.5
 pygments==2.0.2
+numpy==1.9.2
+scipy==0.15.1
 sympy
 nose
 matplotlib
