@@ -1,1 +1,1 @@
-web: ipython notebook --pylab inline --port=$PORT --ip=0.0.0.0
+web: ipython notebook --pylab --port=$PORT --ip=0.0.0.0
