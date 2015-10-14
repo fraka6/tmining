@@ -10,10 +10,11 @@ terminado==0.5
 pygments==2.0.2
 numpy==1.9.2
 scipy==0.15.1
-scikit-learn
-sympy
-matplotlib
+scikit-learn==0.16.1
+sympy==0.7.6.1
+matplotlib==1.4.3
 https://bitbucket.org/fraka6/mlboost/get/default.zip
-theano
-theanets
-nose
+theano==0.7.0
+theanets==0.6.2
+nose==1.3.7
+pandas==0.16.0
