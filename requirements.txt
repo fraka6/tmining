@@ -13,3 +13,4 @@ scipy==0.15.1
 sympy
 nose
 matplotlib
+https://bitbucket.org/fraka6/mlboost
