@@ -150,7 +150,7 @@ c.NotebookApp.pylab = 'enabled'
 # c.NotebookApp.base_url = '/'
 
 # The directory to use for notebooks and kernels.
-# c.NotebookApp.notebook_dir = u'/app/notebooks'
+c.NotebookApp.notebook_dir = u'/app/notebooks'
 
 # The url for MathJax.js.
 # c.NotebookApp.mathjax_url = ''
