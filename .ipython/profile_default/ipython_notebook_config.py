@@ -44,7 +44,7 @@ c = get_config()
 # c.NotebookApp.certfile = u''
 
 # DISABLED: use %pylab or %matplotlib in the notebook to enable matplotlib.
-c.NotebookApp.pylab = 'enabled'
+c.NotebookApp.pylab = 'inline'
 
 # extra paths to look for Javascript notebook extensions
 # c.NotebookApp.extra_nbextensions_path = []
