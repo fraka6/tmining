@@ -21,6 +21,8 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D78692
 	apt-get update && \
 	apt-get install -y lxc-docker
 
+RUN apt-get -y install python-pip python-dev g++ make libfreetype6-dev libpng-dev libopenblas-dev liblapack-dev gfortran
+
 # Install forego
 RUN curl -o /usr/bin/forego https://godist.herokuapp.com/projects/ddollar/forego/releases/current/linux-amd64/forego && chmod +x /usr/bin/forego
 
@@ -36,8 +38,6 @@ ADD / /srv/dokku-alt
 WORKDIR /srv/dokku-alt
 RUN sed -i 's/linux-image-extra-virtual, //g' deb/dokku-alt/DEBIAN/control
 RUN make install
-
-RUN apt-get -y install python-pip python-dev g++ make libfreetype6-dev libpng-dev libopenblas-dev liblapack-dev gfortran
 
 EXPOSE 22 80 443
 
