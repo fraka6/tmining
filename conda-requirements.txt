@@ -4,7 +4,6 @@ jsonschema
 ipython
 pyzmq
 tornado
-wsgiref
 mistune
 terminado
 pygments
