@@ -2,6 +2,7 @@ Jinja2
 MarkupSafe
 jsonschema
 ipython
+jupyter
 pyzmq
 tornado
 mistune
