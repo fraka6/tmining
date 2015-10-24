@@ -12,6 +12,5 @@ scipy
 scikit-learn
 sympy
 matplotlib
-https://bitbucket.org/fraka6/mlboost/get/default.zip
 nose
 pandas
