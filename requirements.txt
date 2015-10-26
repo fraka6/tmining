@@ -1,3 +1,4 @@
 keras
 wsgiref
 https://bitbucket.org/fraka6/mlboost/get/default.zip
+https://github.com/fraka6/pytrade/archive/master.zip
