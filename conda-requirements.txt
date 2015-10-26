@@ -1,0 +1,17 @@
+Jinja2
+MarkupSafe
+jsonschema
+ipython
+jupyter
+pyzmq
+tornado
+mistune
+terminado
+pygments
+numpy
+scipy
+scikit-learn
+sympy
+matplotlib
+nose
+pandas
