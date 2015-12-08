@@ -20,8 +20,8 @@ class BucketData(dict):
     format_date_range='-{h}:{m}'
 
     @classmethod
-    def get_time_range(cls, range_minutes=5):
-        start = datetime.now()
+    def get_time_range(cls, start=None, range_minutes=5):
+        start = start or datetime.now()
         stop = start+timedelta(minutes=range_minutes)
         end = cls.format_date_range.format(h=stop.hour, m=stop.minute)
         return start.strftime(cls.format_date) + end
@@ -39,7 +39,7 @@ class BucketData(dict):
     def add(self, values, date_range=None):
         ''' add values for a given time range '''
         # generate date_range
-        date_range = date_range or BucketData.get_time_range(self.range_minutes)
+        date_range = date_range or BucketData.get_time_range(range_minutes=self.range_minutes)
         self[date_range]=dict([(key,val) for key, val in zip(self.fieldnames, values)])
     
     def json(self):
@@ -63,9 +63,14 @@ class RetailBucket(BucketData):
         return rb
     
 # generate fake data
-time_range = BucketData.get_time_range()
+now =  datetime.now() 
+time_range = BucketData.get_time_range(now)
 values = (time_range, 1.76, 'in')
 rb = RetailBucket.create('Doyle','VRM', 'front_door', '1', values)
+now+=timedelta(minutes=3)
+time_range = BucketData.get_time_range(now)
+values = (time_range, 1.76, 'out')
+rb.add(values, time_range)
 
 api = falcon.API()
 api.add_route('/bucket', rb)  
