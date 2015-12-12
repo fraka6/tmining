@@ -72,12 +72,21 @@ class BucketData(dict):
 
         if verbose:
             print "new user", height, "in:", in_tr, "out", out_tr       
-
-    def count(self):
-        ''' count nb of people entering each time bucket period '''
-        return dict([(time_range, len(self[time_range])) for time_range in self])
+            
+    def filter_bucket(bucket, key, val):
+        return dict([(key, el) for key, el in bucket.items() if el[key]==val])
     
-    def
+    def count(self, constraint=None):
+        ''' count nb of people entering each time bucket period;
+            constraint = (key, val) '''
+        key,val = contraint if constraint else None, None
+                
+        if constraint:
+            return dict([(time_range, len(self.filter_bucket(self[time_range], key, val))) for time_range, el in self.items()])
+        else:
+            return dict([(time_range, len(self[time_range])) for time_range in self])
+    
+    
     def on_get(self, req, resp):
         resp.body = json.dumps(self)
         resp.status = falcon.HTTP_200
