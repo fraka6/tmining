@@ -74,8 +74,10 @@ class BucketData(dict):
             print "new user", height, "in:", in_tr, "out", out_tr       
 
     def count(self):
+        ''' count nb of people entering each time bucket period '''
         return dict([(time_range, len(self[time_range])) for time_range in self])
-               
+    
+    def
     def on_get(self, req, resp):
         resp.body = json.dumps(self)
         resp.status = falcon.HTTP_200
