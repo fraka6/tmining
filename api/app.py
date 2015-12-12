@@ -13,6 +13,7 @@ import json
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from pprint import pprint
 import falcon
+from random import random, randint, randrange, choice
 
 class BucketData(dict):
     ''' general BucketData class '''
@@ -40,11 +41,44 @@ class BucketData(dict):
         ''' add values for a given time range '''
         # generate date_range
         date_range = date_range or BucketData.get_time_range(range_minutes=self.range_minutes)
-        self[date_range]=dict([(key,val) for key, val in zip(self.fieldnames, values)])
+        self[date_range]=dict([(key,val) for key, val in zip(self.fieldnames, values)])            
+        
+    def add_random(self, height=None, max_min=60, bucket=5, verbose=True):
+        ''' add random user entering and exiting '''
     
+        now = datetime.now()
+
+        def get_time_range():
+            delta = randint(0, max_min)
+            delta =  delta - (delta % bucket)
+            now_delta = datetime(now.year, now.day, now.hour) + timedelta(minutes=delta)
+            return now_delta, self.get_time_range(now_delta)
+        
+        now1, time_range1 = get_time_range()
+        now2, time_range2 = get_time_range()
+
+        height = height or (random()+1.0)
+        
+        if now1<now2:
+            in_dt, out_dt = now1, now2
+            in_tr, out_tr = time_range1, time_range2
+        else:
+            out_dt, in_dt = now1, now2
+            in_tr, out_tr = time_range2, time_range1
+         
+        self.add((in_tr, height, 'in'), in_tr)
+        self.add((out_tr, height, 'out'), out_tr)
+
+        if verbose:
+            print "new user", height, "in:", in_tr, "out", out_tr   
+        
+        
     def json(self):
         data = {'data':self}
         print json.dumps(data)
+
+    def bucket(self):
+        pass
     
     def on_get(self, req, resp):
         resp.body = self.json()
@@ -62,6 +96,8 @@ class RetailBucket(BucketData):
         rb.add(values, date_range)
         return rb
     
+
+
 # generate fake data
 now =  datetime.now() 
 time_range = BucketData.get_time_range(now)
@@ -71,6 +107,8 @@ now+=timedelta(minutes=3)
 time_range = BucketData.get_time_range(now)
 values = (time_range, 1.76, 'out')
 rb.add(values, time_range)
+for i in range(10):
+    rb.add_random()
 
 api = falcon.API()
 api.add_route('/bucket', rb)  
