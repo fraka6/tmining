@@ -1,5 +1,5 @@
 #!/usr/bin/python
-''' simple interface to simulate or use RetailBucket 
+''' simple interface to simulate or use RetailBucket API 
     how to run it: 
       1) gunicorn app:api
       2) http GET localhost:8000/bucket
@@ -18,14 +18,14 @@ from random import random, randint, randrange, choice
 class BucketData(dict):
     ''' general BucketData class '''
     format_date='%Y%m%d %H:%M'
-    format_date_range='-{h}:{m}'
+    format_date_range='-%H:%M'
 
     @classmethod
     def get_time_range(cls, start=None, range_minutes=5):
+        ''' get time range '''
         start = start or datetime.now()
         stop = start+timedelta(minutes=range_minutes)
-        end = cls.format_date_range.format(h=stop.hour, m=stop.minute)
-        return start.strftime(cls.format_date) + end
+        return start.strftime(cls.format_date) + stop.strftime(cls.format_date_range)
 
     def __init__(self, fieldnames, org, branch, zone, device_id, 
                  range_minutes=5):
@@ -41,48 +41,54 @@ class BucketData(dict):
         ''' add values for a given time range '''
         # generate date_range
         date_range = date_range or BucketData.get_time_range(range_minutes=self.range_minutes)
-        self[date_range]=dict([(key,val) for key, val in zip(self.fieldnames, values)])            
+        self[date_range] = dict([(key,val) for key, val in zip(self.fieldnames, values)])            
         
     def add_random(self, height=None, max_min=60, bucket=5, verbose=True):
         ''' add random user entering and exiting '''
     
         now = datetime.now()
 
-        def get_time_range():
+        def get_random_time_range():
             delta = randint(0, max_min)
             delta =  delta - (delta % bucket)
             now_delta = datetime(now.year, now.day, now.hour) + timedelta(minutes=delta)
             return now_delta, self.get_time_range(now_delta)
         
-        now1, time_range1 = get_time_range()
-        now2, time_range2 = get_time_range()
+        now1, time_range1 = get_random_time_range()
+        now2, time_range2 = get_random_time_range()
 
-        height = height or (random()+1.0)
+        height = height or (random() + 1.0)
         
-        if now1<now2:
+        if now1 < now2:
             in_dt, out_dt = now1, now2
             in_tr, out_tr = time_range1, time_range2
         else:
-            out_dt, in_dt = now1, now2
+            in_dt, out_dt = now2, now1
             in_tr, out_tr = time_range2, time_range1
          
+        # add in and out user
         self.add((in_tr, height, 'in'), in_tr)
         self.add((out_tr, height, 'out'), out_tr)
 
         if verbose:
-            print "new user", height, "in:", in_tr, "out", out_tr   
-        
-        
-    def json(self):
-        data = {'data':self}
-        print json.dumps(data)
+            print "new user", height, "in:", in_tr, "out", out_tr       
 
-    def bucket(self):
-        pass
-    
+    def count(self):
+        return dict([(time_range, len(self[time_range])) for time_range in self])
+               
     def on_get(self, req, resp):
-        resp.body = self.json()
+        resp.body = json.dumps(self)
         resp.status = falcon.HTTP_200
+
+class Count:
+    def __init__(self, bucket):
+        self.bucket = bucket
+        
+    def on_get(self, req, resp):
+        resp.body = json.dumps(self.bucket.count())
+        resp.status = falcon.HTTP_200
+
+
 
 class RetailBucket(BucketData):
     def __init__(self, org, branch, zone, device_id, range_minutes=5):
@@ -95,14 +101,14 @@ class RetailBucket(BucketData):
         rb = RetailBucket(org, branch, zone, device_id, range_minutes)
         rb.add(values, date_range)
         return rb
-    
-
+     
 
 # generate fake data
 now =  datetime.now() 
 time_range = BucketData.get_time_range(now)
 values = (time_range, 1.76, 'in')
 rb = RetailBucket.create('Doyle','VRM', 'front_door', '1', values)
+count = Count(rb)
 now+=timedelta(minutes=3)
 time_range = BucketData.get_time_range(now)
 values = (time_range, 1.76, 'out')
@@ -112,4 +118,5 @@ for i in range(10):
 
 api = falcon.API()
 api.add_route('/bucket', rb)  
+api.add_route('/count', count)  
 print "running server"   
