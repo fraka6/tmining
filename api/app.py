@@ -68,11 +68,14 @@ class BucketData(defaultdict):
             now_delta = datetime(now.year, now.month, now.day, now.hour) + timedelta(minutes=delta)
             return now_delta, self.get_time_range(now_delta)
         
+        # get 2 time range
         now1, time_range1 = get_random_time_range()
         now2, time_range2 = get_random_time_range()
 
+        # generate a random user getting in
         height = height or (random() + 1.0)
         
+        # ensure in and out time_range makes sense
         if now1 < now2:
             in_dt, out_dt = now1, now2
             in_tr, out_tr = time_range1, time_range2
@@ -81,8 +84,15 @@ class BucketData(defaultdict):
             in_dt, out_dt = now2, now1
             in_tr, out_tr = time_range2, time_range1
 
-        tin = randomDate(in_dt, in_dt+timedelta(minutes=bucket))
-        tout = randomDate(out_dt, out_dt+timedelta(minutes=bucket))
+        # generate random time 
+        t1 = randomDate(in_dt, in_dt+timedelta(minutes=bucket))
+        t2 = randomDate(out_dt, out_dt+timedelta(minutes=bucket))
+        # ensure
+        if t1 < t2:
+            tin, tout = t1, t2
+        else:
+            tin, tout = t2, t1
+
         # add in and out user
         self.add((str(tin), height, 'in'), in_tr)
         self.add((str(tout), height, 'out'), out_tr)
