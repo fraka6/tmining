@@ -9,13 +9,24 @@
 import sys
 import argparse
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 import json
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from pprint import pprint
 import falcon
 from random import random, randint, randrange, choice
 from collections import defaultdict
+
+
+def date_to_timestamp(d) :
+  return int(time.mktime(d.timetuple()))
+
+def randomDate(start, end):
+  """Get a random date between two dates"""
+  stime = date_to_timestamp(start)
+  etime = date_to_timestamp(end)
+  ptime = stime + random() * (etime - stime)
+  return date.fromtimestamp(ptime)
 
 class BucketData(defaultdict):
     ''' general BucketData class '''
@@ -65,13 +76,16 @@ class BucketData(defaultdict):
         if now1 < now2:
             in_dt, out_dt = now1, now2
             in_tr, out_tr = time_range1, time_range2
+            
         else:
             in_dt, out_dt = now2, now1
             in_tr, out_tr = time_range2, time_range1
-         
+
+        tin = randomDate(in_dt, in_dt+timedelta(minutes=bucket))
+        tout = randomDate(out_dt, out_dt+timedelta(minutes=bucket))
         # add in and out user
-        self.add((in_tr, height, 'in'), in_tr)
-        self.add((out_tr, height, 'out'), out_tr)
+        self.add((str(tin), height, 'in'), in_tr)
+        self.add((str(tout), height, 'out'), out_tr)
 
         if verbose:
             print "new user", height, "in:", in_tr, "out", out_tr       
@@ -104,7 +118,7 @@ class Count:
 
 class RetailBucket(BucketData):
     def __init__(self, org, branch, zone, device_id, range_minutes=5):
-        fieldnames = ['time_range','height','in_out']
+        fieldnames = ['time','height','in_out']
         BucketData.__init__(self, fieldnames, org, branch, zone, device_id, range_minutes)
 
     def count(self):
@@ -117,9 +131,9 @@ class RetailBucket(BucketData):
 rb = RetailBucket('Doyle','VRM', 'front_door', '1')
 count = Count(rb)
 
-# add 10 random users
-for i in range(3):
-    rb.add_random()
+# add n random users
+for i in range(2):
+    rb.add_random(max_min=10, bucket=5)
 
 api = falcon.API()
 api.add_route('/bucket', rb)  
