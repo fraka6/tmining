@@ -26,7 +26,7 @@ def randomDate(start, end):
   stime = date_to_timestamp(start)
   etime = date_to_timestamp(end)
   ptime = stime + random() * (etime - stime)
-  return date.fromtimestamp(ptime)
+  return datetime.fromtimestamp(ptime)
 
 class BucketData(defaultdict):
     ''' general BucketData class '''
