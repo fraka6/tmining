@@ -83,7 +83,7 @@ class BucketData(defaultdict):
         ''' count nb of people entering each time bucket period;
             constraint = (key, val) '''
         key,val = contraint if constraint else None, None
-                
+        
         if constraint:
             return dict([(time_range, len(self.filter_bucket(self[time_range], key, val))) for time_range, el in self.items()])
         else:
@@ -102,32 +102,23 @@ class Count:
         resp.status = falcon.HTTP_200
 
 
-
 class RetailBucket(BucketData):
     def __init__(self, org, branch, zone, device_id, range_minutes=5):
         fieldnames = ['time_range','height','in_out']
         BucketData.__init__(self, fieldnames, org, branch, zone, device_id, range_minutes)
-    
-    @classmethod
-    def create(cls, org, branch, zone, device_id, values, date_range=None, 
-               range_minutes=5):
-        rb = RetailBucket(org, branch, zone, device_id, range_minutes)
-        rb.add(values, date_range)
-        return rb
-     
 
+    def count(self):
+        ''' count in and out users '''
+        def n(val):
+            return len([el for el in self[time_range] if el['in_out']==val])
+        return dict([(time_range, {'in':n('in'),'out':n('out')}) for time_range in self])
+  
 # generate fake data
-now =  datetime.now() 
-time_range = BucketData.get_time_range(now)
-values = (time_range, 1.76, 'in')
-rb = RetailBucket.create('Doyle','VRM', 'front_door', '1', values)
+rb = RetailBucket('Doyle','VRM', 'front_door', '1')
 count = Count(rb)
-now+=timedelta(minutes=3)
-time_range = BucketData.get_time_range(now)
-values = (time_range, 1.76, 'out')
-rb.add(values, time_range)
+
 # add 10 random users
-for i in range(10):
+for i in range(3):
     rb.add_random()
 
 api = falcon.API()
