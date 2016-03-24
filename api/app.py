@@ -87,7 +87,8 @@ class BucketData(defaultdict):
         # generate random time 
         t1 = randomDate(in_dt, in_dt+timedelta(minutes=bucket))
         t2 = randomDate(out_dt, out_dt+timedelta(minutes=bucket))
-        # ensure
+        
+        # set entry and exit time
         if t1 < t2:
             tin, tout = t1, t2
         else:
@@ -98,7 +99,7 @@ class BucketData(defaultdict):
         self.add((str(tout), height, 'out'), out_tr)
 
         if verbose:
-            print "new user", height, "in:", in_tr, "out", out_tr       
+            print "new user", height, "in:", tin, "out", tout       
             
     def filter_bucket(bucket, key, val):
         return dict([(key, el) for key, el in bucket.items() if el[key]==val])
@@ -127,6 +128,7 @@ class Count:
 
 
 class RetailBucket(BucketData):
+    ''' hardcoded bucket -> the retail one '''
     def __init__(self, org, branch, zone, device_id, range_minutes=5):
         fieldnames = ['time','height','in_out']
         BucketData.__init__(self, fieldnames, org, branch, zone, device_id, range_minutes)
